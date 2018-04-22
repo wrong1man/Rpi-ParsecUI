@@ -1,6 +1,8 @@
 # Rpi-ParsecUI
 Graphical user interface for Parsec on the Raspberry PI
 
+-----------------------
+
 
 First off, and most importantly - I am not affiliated with parsec!
 
