@@ -11,6 +11,7 @@ I did this project for fun, it's really the first thing i ever made worth sharin
 ----------------------
 
 Thank you for using the unoficial Parsec GUI for the raspberry PI!
+
 ----------------------
 
 Known problems:
