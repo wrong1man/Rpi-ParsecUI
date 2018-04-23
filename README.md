@@ -36,6 +36,8 @@ Known problems:
 
 9- "fake bar" is not able to move the window
 
+10- nickname display not working
+
 ----------------------------------------------
 
 Find me on discord! @WrongMan#2784
