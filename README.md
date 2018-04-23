@@ -34,7 +34,7 @@ Known problems:
 
 8- Error dialog window needs some make-up
 
-9- "fake bar" is not to move the window
+9- "fake bar" is not able to move the window
 
 ----------------------------------------------
 
