@@ -17,6 +17,7 @@ Thank you for using the unoficial Parsec GUI for the raspberry PI!
 ----------------------
 
 Known problems:
+
 1- No saved passwords functionality
 
 2- No more than 1 server supported
