@@ -46,9 +46,9 @@ Needs parsec raspbian version installed: https://parsecgaming.com/downloads
 
 
 
-Download Compiled version here: https://drive.google.com/drive/folders/12dv_TjB0QiXOWOs3P1OiK-J_bAQfGQYe?usp=sharing
+Download Compiled version here: https://github.com/wrong1man/Rpi-ParsecUI/releases/
 
-Run file in dist folder. Needs xwindows (raspbian with a desktop); probably needs python3 (probably already installed)
+Extract on the PI! Run file in dist folder. Needs xwindows (raspbian with a desktop); probably needs python3 (probably already installed)
 
 
 Code version - start from log2_0.py. Needs xwindows; python3 +imported modules
