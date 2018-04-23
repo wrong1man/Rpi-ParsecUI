@@ -42,6 +42,10 @@ Find me on discord! @WrongMan#2784
 
 ----------------------------------------------
 
+needs parsec raspbian version installed: https://parsecgaming.com/downloads
+
+
+
 Download Compiled version here: https://drive.google.com/drive/folders/12dv_TjB0QiXOWOs3P1OiK-J_bAQfGQYe?usp=sharing
 
 Run file in dist folder. Needs xwindows (raspbian with a desktop); probably needs python3 (probably alreary installed)
