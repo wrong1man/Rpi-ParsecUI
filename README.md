@@ -45,4 +45,5 @@ Download Compiled version here: https://drive.google.com/drive/folders/12dv_TjB0
 
 Run file in dist folder. Needs xwindows (raspbian with a desktop); probably needs python3 (probably alreary installed)
 
+
 Code version - start from log2_0.py. Needs xwindows; python3 +imported modules
