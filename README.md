@@ -42,13 +42,13 @@ Find me on discord! @WrongMan#2784
 
 ----------------------------------------------
 
-needs parsec raspbian version installed: https://parsecgaming.com/downloads
+Needs parsec raspbian version installed: https://parsecgaming.com/downloads
 
 
 
 Download Compiled version here: https://drive.google.com/drive/folders/12dv_TjB0QiXOWOs3P1OiK-J_bAQfGQYe?usp=sharing
 
-Run file in dist folder. Needs xwindows (raspbian with a desktop); probably needs python3 (probably alreary installed)
+Run file in dist folder. Needs xwindows (raspbian with a desktop); probably needs python3 (probably already installed)
 
 
 Code version - start from log2_0.py. Needs xwindows; python3 +imported modules
