@@ -204,6 +204,8 @@ class Ui_Dialog(object):
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         
+        
+        #end of ui code
 
         self.pcimg.hide()
         self.playb1.hide()
@@ -212,11 +214,9 @@ class Ui_Dialog(object):
         self.maxb.clicked.connect(Dialog.showMaximized)
         self.setservn(serv)
         self.playb1.clicked.connect(lambda: self.play(user,pw))
-        #self.playb1.clicked.connect(self.reload(1))
         self.reloadb.clicked.connect(lambda: self.reload(user,pw))
-        #if len(a=:
             
-    def setservn(self,serv):
+    def setservn(self,serv): #sets server name 
         print('enter sevrer set name')
         if  serv is not '':
             print('setting name')
@@ -231,7 +231,7 @@ class Ui_Dialog(object):
             self.pcimg.hide()
             self.playb1.hide()
         
-    def play(self,usr,pw):
+    def play(self,usr,pw): #access server - should be integrated into reload; didn't work
         print('enter play')
         p=pexpect.spawn('parsec')
         state1=p.expect(['Email address:','saved',pexpect.EOF])
@@ -256,7 +256,7 @@ class Ui_Dialog(object):
             self.reload(usr,pw)
 
         
-    def reload(self,user,pw):
+    def reload(self,user,pw): #reload function
         print ('enter reload')
         p=pexpect.spawn('parsec')
         print('spawned')
@@ -308,7 +308,7 @@ class Ui_Dialog(object):
              
         
                     
-    def errordiag(self,error,crit):
+    def errordiag(self,error,crit): #error dialog function
         disptxt=error
         errord = QtWidgets.QDialog()
         errord.ui = Form2()
@@ -323,22 +323,8 @@ class Ui_Dialog(object):
        
                     
                     
+
         
-    #def cmd1(self):
-        #The subprocess way
-        #print('trying now')
-        #p = subprocess.Popen('sudo parsec', shell=True, stdin=subprocess.PIPE,stdout=subprocess.PIPE)
-        #p.stdin.write(b'n' + b'\n')
-        #p.stdin.write(b'nunoandre1@hotmail.com' + b'\n')
-        #p.stdin.write(b'Horsegame1' + b'\n')
-        #p.stdin.write(b'n' + b'\n')
-        #p.stdin.write(b'1' + b'\n')
-        #return
-        
-        #The pexpect way
-        
-        
-        print('end')
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
