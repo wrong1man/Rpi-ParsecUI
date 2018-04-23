@@ -331,11 +331,11 @@ class Ui_Dialog(object):
         self.playtab.setText(_translate("Dialog", "<html><head/><body><p><img src=\":/all/resources/playtabgray.png\"/></p></body></html>"))
         self.friendstab.setText(_translate("Dialog", "<html><head/><body><p><img src=\":/all/resources/friend.png\"/></p></body></html>"))
         self.hosttab.setText(_translate("Dialog", "<html><head/><body><p><img src=\":/all/resources/host.png\"/></p></body></html>"))
-        self.help.setText(_translate("Dialog", "<html><head/><body><p><img src=\":/all/:/all/:/all/resources/help.png\"/></p></body></html>"))
+        self.help.setText(_translate("Dialog", "<html><head/><body><p><img src=\":/all/resources/help.png\"/></p></body></html>"))
         self.username.setText(_translate("Dialog", "<html><head/><body><p>WrongMan<br/>#xxxxxx</p></body></html>"))
         self.reloadb.setText(_translate("Dialog", "Reload"))
         self.computers.setText(_translate("Dialog", "Computers"))
         self.pcname1.setText(_translate("Dialog", "No computers Available"))
-        self.pcimg.setText(_translate("Dialog", "<html><head/><body><p><img src=\":/all/:/all/:/all/resources/pc.png\"/></p></body></html>"))
+        self.pcimg.setText(_translate("Dialog", "<html><head/><body><p><img src=\":/all/resources/pc.png\"/></p></body></html>"))
         self.playb1.setText(_translate("Dialog", "PLAY"))
 
