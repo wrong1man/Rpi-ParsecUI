@@ -161,16 +161,43 @@ class Ui_ParsecUI(object):
         self.retranslateUi(ParsecUI)
         QtCore.QMetaObject.connectSlotsByName(ParsecUI)
         
-        self.checkBox.hide()
+        #self.checkBox.hide()
         self.loginb.clicked.connect(lambda: self.login()) #was maind
         self.actionClose.triggered.connect(lambda: sys.exit())
         self.wrongpass.hide()
+        self.checkBox.clicked.connect(lambda: self.chekbx())
+        self.checkpw()
         
-    def login(self):
-        if self.pwfield.text()=='' or self.userfield.text()=='':
+       
+    
+    def checkpw(self):# check for saved passwords
+        p=pexpect.spawn('parsec')
+        print('Checking for saved passwords')
+        state1=p.expect(['Email','saved',pexpect.EOF])
+        print('pass expect 1')
+        print(state1)
+        if state1 == 0:
+            pass
+        elif state1==2:
+            print('couldnt start parsec please kill task')
+        else:
+            self.checkBox.setText('Use saved password')
+            self.checkBox.setChecked(True)
+        p.close()
+    
+    def chekbx(self):#checkbox name change
+        if self.checkBox.text() =='Use saved password':
+            self.checkBox.setText("Save password")
+        else:
+            pass
+
+        
+    def login(self): #login test cycle
+        print(self.checkBox.text() == "Save password", self.checkBox.text())
+        if (self.pwfield.text()=='' or self.userfield.text()=='') and self.checkBox.text() == "Save password":
             self.wrongpass.setText("<html><head/><body><p align=\"center\"><span style=\" font-weight:600; color:#cb1504;\">Please fill in both fields</span></p></body></html>")
             self.wrongpass.show()
-        elif '@' not in self.userfield.text() or '.' not in self.userfield.text():
+        elif ('@' not in self.userfield.text() or '.' not in self.userfield.text()) and self.checkBox.text() == "Save password":
             self.wrongpass.setText("<html><head/><body><p align=\"center\"><span style=\" font-weight:600; color:#cb1504;\">Please enter a valid Email</span></p></body></html>")
             self.wrongpass.show()
         else:
@@ -189,12 +216,23 @@ class Ui_ParsecUI(object):
                 p.close()
                 self.errordiag(text,critica)
             elif state1==1:
-                p.sendline('n')
+                if self.checkBox.isChecked()==True and self.checkBox.text()=='Use saved password':
+                    p.sendline('y')
+                else:
+                    p.sendline('n')
+                    p.sendline(self.userfield.text())
+                    p.sendline(self.pwfield.text())
+                    if self.checkBox.isChecked()==True:
+                        p.sendline('y')
+                    else:
+                        p.sendline('n')
             else:
-                pass    
-            p.sendline(self.userfield.text())
-            p.sendline(self.pwfield.text())
-            p.sendline('n')
+                p.sendline(self.userfield.text())
+                p.sendline(self.pwfield.text())
+                if self.checkBox.isChecked()==True:
+                    p.sendline('y')
+                else:
+                    p.sendline('n')
             print('sent cred')
             state2=p.expect(['Select server:',pexpect.EOF])
             print('pass expect 2')
@@ -221,26 +259,21 @@ class Ui_ParsecUI(object):
                 p.close()
                 self.Omaindialog(serv)
         return
-                
-                
-                
         
-    #def firstcheck(self):
-        
-    def Omaindialog(self,srv):
+    def Omaindialog(self,srv): #open main window - In the future Mainwindow will actually be the main window, istead of a dialog.
         print('opening main window')
         pw=self.pwfield.text()
         user=self.userfield.text()
         FirstUI.hide()
         dialog = QtWidgets.QDialog()
         dialog.ui = Form()
-        dialog.ui.setupUi(dialog,user,pw,srv)
+        dialog.ui.setupUi(dialog,user,pw,srv,self.checkBox.isChecked())
         dialog.exec_()
         dialog.show()
         Dialog.show
         sys.exit()
 
-    def errordiag(self,error,crit):
+    def errordiag(self,error,crit): #Error dialog Function
         disptxt=error
         errord = QtWidgets.QDialog()
         errord.ui = Form2()
@@ -261,7 +294,7 @@ class Ui_ParsecUI(object):
         self.plogo.setText(_translate("ParsecUI", "<html><head/><body><p><img src=\":/all/resources/logo.png\"/></p></body></html>"))
         self.emailtitle.setText(_translate("ParsecUI", "Email"))
         self.pwtitle.setText(_translate("ParsecUI", "Password"))
-        self.checkBox.setText(_translate("ParsecUI", "Use/save password?"))
+        self.checkBox.setText(_translate("ParsecUI", "Save password"))
         self.loginb.setText(_translate("ParsecUI", "LOG IN"))
         self.wrongpass.setText(_translate("ParsecUI", "<html><head/><body><p align=\"center\"><span style=\" font-weight:600; color:#cb1504;\">The username/password is icorrect!</span></p></body></html>"))
         self.menuFile.setTitle(_translate("ParsecUI", "File"))
