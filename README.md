@@ -14,6 +14,8 @@ I did this project for fun, it's really the first thing i ever made worth sharin
 
 Thank you for using the unoficial Parsec GUI for the raspberry PI!
 
+__There is no release (compiled form) for this version yet__
+
 ----------------------
 
 Known problems:
