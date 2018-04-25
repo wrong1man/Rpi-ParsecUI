@@ -1,0 +1,22 @@
+<RCC>
+  <qresource prefix="all">
+    <file>resources/close.png</file>
+    <file>resources/closehover.png</file>
+    <file>resources/friend.png</file>
+    <file>resources/help.png</file>
+    <file>resources/host.png</file>
+    <file>resources/icon.png</file>
+    <file>resources/Login1.png</file>
+    <file>resources/logo.png</file>
+    <file>resources/maximize.png</file>
+    <file>resources/maximizehover.png</file>
+    <file>resources/minimize.png</file>
+    <file>resources/minimizehover.png</file>
+    <file>resources/options.png</file>
+    <file>resources/optionshover.png</file>
+    <file>resources/pc.png</file>
+    <file>resources/playtabgray.png</file>
+    <file>resources/playtabnogray.png</file>
+    <file>resources/psbar.png</file>
+  </qresource>
+</RCC>

@@ -7,10 +7,11 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import pyqtSignal
 from errord import Ui_Error as Form2
 import pexpect
 class Ui_Dialog(object):
-    def setupUi(self, Dialog, user, pw, serv):
+    def setupUi(self, Dialog, user, pw, serv, ischk):
         print('main win')
         #Dialog.setWindowFlags(QtCore.Qt.FramelessWindowHint) Removes title bar
         Dialog.setObjectName("Dialog")
@@ -202,10 +203,23 @@ class Ui_Dialog(object):
         self.gridLayout.addItem(spacerItem6, 1, 4, 1, 1)
         self.verticalLayout.addWidget(self.mainframe)
         self.retranslateUi(Dialog)
+        
+        self.gif = QtWidgets.QLabel(self.mainframe)
+        self.gif.setMinimumSize(QtCore.QSize(30, 30))
+        self.gif.setMaximumSize(QtCore.QSize(30, 30))
+        self.gif.setStyleSheet("border-image: url(loading.gif);")
+        self.gif.setText("")
+        self.gif.setObjectName("label")
+        self.gridLayout.addWidget(self.gif, 0, 4, 1, 1)
+        self.movie = QtGui.QMovie('loading-2.gif', parent=self.gif) 
+        self.movie.setCacheMode(QtGui.QMovie.CacheAll) 
+        self.movie.setScaledSize(QtCore.QSize(30,30))
+        self.gif.setMovie(self.movie)
+        self.gif.hide()
+        
+        
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         
-        
-        #end of ui code
 
         self.pcimg.hide()
         self.playb1.hide()
@@ -213,10 +227,10 @@ class Ui_Dialog(object):
         self.minb.clicked.connect(Dialog.showMinimized)
         self.maxb.clicked.connect(Dialog.showMaximized)
         self.setservn(serv)
-        self.playb1.clicked.connect(lambda: self.play(user,pw))
-        self.reloadb.clicked.connect(lambda: self.reload(user,pw))
+        self.playb1.clicked.connect(lambda: self.play(user,pw,ischk))
+        self.reloadb.clicked.connect(lambda: self.reload(user,pw,ischk))
             
-    def setservn(self,serv): #sets server name 
+    def setservn(self,serv): #set server name function
         print('enter sevrer set name')
         if  serv is not '':
             print('setting name')
@@ -231,20 +245,24 @@ class Ui_Dialog(object):
             self.pcimg.hide()
             self.playb1.hide()
         
-    def play(self,usr,pw): #access server - should be integrated into reload; didn't work
+    def play(self,usr,pw,ischk): #PLAY function
         print('enter play')
         p=pexpect.spawn('parsec')
         state1=p.expect(['Email address:','saved',pexpect.EOF])
         print(state1)
-        if state1== 1:
+        if state1== 1 and ischk==True:
+            p.sendline('y')
+        elif state1==1 and ischk==False:
             p.sendline('n')
+            p.sendline(usr)
+            p.expect('Password:')
+            p.sendline(pw)
+            p.expect('Save')
+            p.sendline('n')
+        elif state1==2:
+            self.errordiag(p.before.decode('utf-8'),0)
         else:
             pass
-        p.sendline(usr)
-        p.expect('Password:')
-        p.sendline(pw)
-        p.expect('Save')
-        p.sendline('n')
         print('sent cred')
         a=p.expect(['server:', pexpect.EOF])
         print('expect 2:', a)
@@ -252,19 +270,22 @@ class Ui_Dialog(object):
             print('send 1')
             p.sendline('1')
             p.expect(pexpect.EOF, timeout=None)
+            text=p.before.decode('utf-8')
+            print(text)
+            self.errordiag(text,0)
         else:
             self.reload(usr,pw)
 
         
-    def reload(self,user,pw): #reload function
+    def reload_old(self,user,pw,ischk): #reload server status
         print ('enter reload')
+        print(ischk)
         p=pexpect.spawn('parsec')
         print('spawned')
         state1=p.expect(['Email address:','saved',pexpect.EOF])
         print('pass expect 1')
         print(state1)
         if state1==2:
-            #errordiag
             text=p.before.decode('utf-8')
             prelim='Something went wrong - Try to task kill all parsec processes through task manager!-\n Error log:\n'
             text= prelim+ str(text) + 'THIS WAS A CRITICAL ERROR - CLOSING GUI'
@@ -273,12 +294,21 @@ class Ui_Dialog(object):
             p.close()
             self.errordiag(text,critica)
         elif state1==1:
-            p.sendline('n')
+            if ischk==False:
+                p.sendline('n')
+                p.sendline(user)
+                p.sendline(pw)
+                p.sendline('n')
+            else:
+                p.sendline('y')
         else:
-            pass
-        p.sendline(user)
-        p.sendline(pw)
-        p.sendline('n')
+            p.sendline(user)
+            p.sendline(pw)
+            if ischk==False:
+                p.sendline('n')
+            else:
+                p.sendline('y')
+                
         print('sent cred')
         state2=p.expect(['Select server:',pexpect.EOF])
         print('pass expect 2')
@@ -295,6 +325,7 @@ class Ui_Dialog(object):
                 critica=0
                 print(text)
                 p.close()
+                self.errordiag(text,critica)
                 pass
                 
         else:
@@ -308,7 +339,7 @@ class Ui_Dialog(object):
              
         
                     
-    def errordiag(self,error,crit): #error dialog function
+    def errordiag(self,error,crit):#call error dialog
         disptxt=error
         errord = QtWidgets.QDialog()
         errord.ui = Form2()
@@ -320,11 +351,41 @@ class Ui_Dialog(object):
             Dialog.close
         else:
             pass
-       
-                    
-                    
-
+                       
+    def reload(self,user,pw,ischk):
+        print('enter reload thread start')
+        self.reloadb.setEnabled(False)
+        self.movie.start()
+        self.gif.show()
+        self.pcname1.setText('Reloading...')
+        print('preparing thread')
+        print(user)
+        print(pw)
+        print(ischk)
+        self.myThread = thread(user,pw,ischk)
+        print('thread ready')
+        self.myThread.start()
+        print('finished')
+        self.myThread.done.connect(self.threadrelay)
+    
+    def threadrelay(self, code, text):
+        print('enter relay', code, text, code==3)
+        self.reloadb.setEnabled(True)
+        self.movie.stop()
+        self.gif.hide()
+        if code == 3:
+            print(text)
+            self.myThread.exit()
+            self.setservn(text)
+            
+        else:
+            self.errordiag(text,code)        
         
+        
+        
+        
+    
+
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
@@ -338,4 +399,67 @@ class Ui_Dialog(object):
         self.pcname1.setText(_translate("Dialog", "No computers Available"))
         self.pcimg.setText(_translate("Dialog", "<html><head/><body><p><img src=\":/all/resources/pc.png\"/></p></body></html>"))
         self.playb1.setText(_translate("Dialog", "PLAY"))
-
+        
+class thread(QtCore.QThread):
+    done=pyqtSignal(int, str)
+    def __init__(self,usr,paw,check, parent=None):
+        QtCore.QThread.__init__(self)
+        self.user=usr
+        self.paw=paw
+        self.check=check
+    def run (self):
+        print ('enter reload')
+        print(self.check)
+        p=pexpect.spawn('parsec')
+        print('spawned')
+        state1=p.expect(['Email address:','saved',pexpect.EOF])
+        print('pass expect 1')
+        print(state1)
+        if state1==2:
+            text=p.before.decode('utf-8')
+            prelim='Something went wrong - Try to task kill all parsec processes through task manager!-\n Error log:\n'
+            text= prelim+ str(text) + 'THIS WAS A CRITICAL ERROR - CLOSING GUI'
+            print(text)
+            p.close()
+            self.done.emit(1, text)
+        elif state1==1:
+            if self.check==False:
+                p.sendline('n')
+                p.sendline(self.user)
+                p.sendline(self.paw)
+                p.sendline('n')
+            else:
+                p.sendline('y')
+        else:
+            p.sendline(self.user)
+            p.sendline(self.paw)
+            if self.check==False:
+                p.sendline('n')
+            else:
+                p.sendline('y')
+                
+        print('sent cred')
+        state2=p.expect(['Select server:',pexpect.EOF])
+        print('pass expect 2')
+        print(state2)
+        if state2==1:
+            text=p.before.decode('utf-8')
+            if '-1002' in text:
+                print('no pc')
+                p.close
+                self.done.emit(3, '')
+            else:
+                prelim='Unexpected error\n Error log:\n'
+                text=prelim+text +' This error might not be critical, try again.\n If the error persists restart the GUI'
+                print(text)
+                p.close()
+                self.done.emit(0, text)
+                pass
+                
+        else:
+            serv=p.before.decode('utf-8')
+            a=serv.find('1)')
+            serv=serv[a:]
+            print(serv)
+            self.done.emit(3, serv)
+            p.close
