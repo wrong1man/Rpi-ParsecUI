@@ -14,17 +14,20 @@ I did this project for fun, it's really the first thing i ever made worth sharin
 
 Thank you for using the unoficial Parsec GUI for the raspberry PI!
 
+__There is no release (compiled form) for this version yet__
+
 ----------------------
 
 Known problems:
 
-1- No saved passwords functionality
+1- (No saved passwords functionality)-Working
 
 2- No more than 1 server supported
 
-3- Settings/help/about not implemented
+3- Settings/help/about not implemented -Next
 
-4- No loading indicator
+4- (No loading indicator)- Introduced threading- (pretty much working***)
+
 
 5- Fonts are not the ones intended
 
@@ -37,6 +40,8 @@ Known problems:
 9- "fake bar" is not able to move the window
 
 10- nickname display not working
+
+*** - Might look like it's "loading forever" when email and password fields are empty, or email is not a valid email (missing "@" or ".")
 
 ----------------------------------------------
 

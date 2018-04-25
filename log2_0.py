@@ -161,86 +161,63 @@ class Ui_ParsecUI(object):
         self.retranslateUi(ParsecUI)
         QtCore.QMetaObject.connectSlotsByName(ParsecUI)
         
-        self.checkBox.hide()
-        self.loginb.clicked.connect(lambda: self.login()) #was maind
+        self.gif = QtWidgets.QLabel(self.frame)
+        self.gif.setMaximumSize(QtCore.QSize(30, 30))
+        #self.gif.setStyleSheet("border-image: url(loading-2.gif);")
+        self.gif.setText("")
+        self.gif.setObjectName("gif")
+        self.horizontalLayout.addWidget(self.gif)
+        self.movie = QtGui.QMovie('loading-2.gif', parent=self.gif) 
+        self.movie.setCacheMode(QtGui.QMovie.CacheAll) 
+        self.movie.setScaledSize(QtCore.QSize(30,30))
+        #self.movie.setSpeed(100) 
+        self.gif.setMovie(self.movie)
+        self.gif.hide()
+        
+        #self.checkBox.hide()
+        self.loginb.clicked.connect(lambda: self.testf()) #was maind
         self.actionClose.triggered.connect(lambda: sys.exit())
         self.wrongpass.hide()
+        self.checkBox.clicked.connect(lambda: self.chekbx())
+        self.checkpw()
         
-    def login(self):
-        if self.pwfield.text()=='' or self.userfield.text()=='':
-            self.wrongpass.setText("<html><head/><body><p align=\"center\"><span style=\" font-weight:600; color:#cb1504;\">Please fill in both fields</span></p></body></html>")
-            self.wrongpass.show()
-        elif '@' not in self.userfield.text() or '.' not in self.userfield.text():
-            self.wrongpass.setText("<html><head/><body><p align=\"center\"><span style=\" font-weight:600; color:#cb1504;\">Please enter a valid Email</span></p></body></html>")
-            self.wrongpass.show()
+       
+    
+    def checkpw(self):# check for saved passwords
+        p=pexpect.spawn('parsec')
+        print('Checking for saved passwords')
+        state1=p.expect(['Email','saved',pexpect.EOF])
+        print('pass expect 1')
+        print(state1)
+        if state1 == 0:
+            pass
+        elif state1==2:
+            print('couldnt start parsec please kill task')
         else:
-            p=pexpect.spawn('parsec')
-            print('spawned')
-            state1=p.expect(['Email','saved',pexpect.EOF])
-            print('pass expect 1')
-            print(state1)
-            if state1==2:
-                #errordiag
-                text=p.before.decode('utf-8')
-                prelim='Something went wrong - Try to task kill all parsec processes through task manager!-\n Error log:\n'
-                text= prelim+ str(text)
-                critica=0
-                print(text)
-                p.close()
-                self.errordiag(text,critica)
-            elif state1==1:
-                p.sendline('n')
-            else:
-                pass    
-            p.sendline(self.userfield.text())
-            p.sendline(self.pwfield.text())
-            p.sendline('n')
-            print('sent cred')
-            state2=p.expect(['Select server:',pexpect.EOF])
-            print('pass expect 2')
-            print(state2)
-            if state2==1:
-                text=p.before.decode('utf-8')
-                if '-1002' in text:
-                    print('no pc')
-                    p.close
-                    self.Omaindialog('')
-                else:
-                    prelim='Unexpected error\n Error log:\n'
-                    text=prelim+text
-                    critica=0
-                    print(text)
-                    p.close()
-                    self.errordiag(text,critica)
-                    
-            else:
-                serv=p.before.decode('utf-8')
-                a=serv.find('1)')
-                serv=serv[a:]
-                print(serv)
-                p.close()
-                self.Omaindialog(serv)
-        return
-                
-                
-                
+            self.checkBox.setText('Use saved password')
+            self.checkBox.setChecked(True)
+        p.close()
+    
+    def chekbx(self):#checkbox name change
+        if self.checkBox.text() =='Use saved password':
+            self.checkBox.setText("Save password")
+        else:
+            pass
         
-    #def firstcheck(self):
-        
-    def Omaindialog(self,srv):
+    def Omaindialog(self,srv): #open main window - In the future Mainwindow will actually be the main window, istead of a dialog.
         print('opening main window')
         pw=self.pwfield.text()
         user=self.userfield.text()
         FirstUI.hide()
         dialog = QtWidgets.QDialog()
         dialog.ui = Form()
-        dialog.ui.setupUi(dialog,user,pw,srv)
+        dialog.ui.setupUi(dialog,user,pw,srv,self.checkBox.isChecked())
         dialog.exec_()
         dialog.show()
         Dialog.show
         sys.exit()
 
-    def errordiag(self,error,crit):
+    def errordiag(self,error,crit): #Error dialog Function
         disptxt=error
         errord = QtWidgets.QDialog()
         errord.ui = Form2()
@@ -253,6 +230,29 @@ class Ui_ParsecUI(object):
         else:
             pass
         return
+    
+    def testf(self):
+        self.movie.start()
+        self.gif.show()
+        self.myThread = thread(self.userfield,self.pwfield, self.wrongpass, self.checkBox)
+        self.myThread.start()
+        print('finished')
+        self.myThread.done.connect(self.threadrelay)
+    
+    def threadrelay(self, code, text):
+        print('enter relay', code, text, code==3)
+        self.movie.stop()
+        self.gif.hide()
+        self.myThread.exit()
+        if code == 3:
+            print(text)
+            print('trying to open main diag')
+            self.Omaindialog(text)
+        elif code == 4:
+            self.wrongpass.setText(text)
+            self.wrongpass.show()            
+        else:
+            self.errordiag(text,code)
         
 
     def retranslateUi(self, ParsecUI):
@@ -261,13 +261,92 @@ class Ui_ParsecUI(object):
         self.plogo.setText(_translate("ParsecUI", "<html><head/><body><p><img src=\":/all/resources/logo.png\"/></p></body></html>"))
         self.emailtitle.setText(_translate("ParsecUI", "Email"))
         self.pwtitle.setText(_translate("ParsecUI", "Password"))
-        self.checkBox.setText(_translate("ParsecUI", "Use/save password?"))
+        self.checkBox.setText(_translate("ParsecUI", "Save password"))
         self.loginb.setText(_translate("ParsecUI", "LOG IN"))
         self.wrongpass.setText(_translate("ParsecUI", "<html><head/><body><p align=\"center\"><span style=\" font-weight:600; color:#cb1504;\">The username/password is icorrect!</span></p></body></html>"))
         self.menuFile.setTitle(_translate("ParsecUI", "File"))
         self.menuAbout.setTitle(_translate("ParsecUI", "About"))
         self.actionClose.setText(_translate("ParsecUI", "Exit"))
         self.actionHelp.setText(_translate("ParsecUI", "Help"))
+
+class thread(QtCore.QThread):
+    done=pyqtSignal(int, str)
+    def __init__(self,usr,paw,wp,check, parent=None):
+        QtCore.QThread.__init__(self)
+        self.user=usr
+        self.paw=paw
+        self.wp=wp
+        self.check=check
+    def run (self):
+        print(self.check.text() == "Save password", self.check.text())
+        if (self.paw.text()=='' or self.user.text()=='') and self.check.text() == "Save password":
+            print('if 1')
+            txt=("<html><head/><body><p align=\"center\"><span style=\" font-weight:600; color:#cb1504;\">Please fill in both fields</span></p></body></html>")
+            self.done.emit(4,txt)
+            print('emited')
+        elif ('@' not in self.user.text() or '.' not in self.user.text()) and self.check.text() == "Save password":
+            print('if 2')
+            txt=("<html><head/><body><p align=\"center\"><span style=\" font-weight:600; color:#cb1504;\">Please enter a valid Email</span></p></body></html>")
+            self.done.emit(4,txt)
+            print('emited')
+        else:
+            print('if 3')
+            p=pexpect.spawn('parsec')
+            print('spawned')
+            state1=p.expect(['Email','saved',pexpect.EOF])
+            print('pass expect 1')
+            print(state1)
+            if state1==2:
+                #errordiag
+                text=p.before.decode('utf-8')
+                prelim='Something went wrong - Try to task kill all parsec processes through task manager!-\n Error log:\n'
+                text= prelim+ str(text)
+                print(text)
+                p.close()
+                self.done.emit(0, text)
+            elif state1==1:
+                if self.check.isChecked()==True and self.check.text()=='Use saved password':
+                    p.sendline('y')
+                else:
+                    p.sendline('n')
+                    p.sendline(self.user.text())
+                    p.sendline(self.paw.text())
+                    if self.check.isChecked()==True:
+                        p.sendline('y')
+                    else:
+                        p.sendline('n')
+            else:
+                p.sendline(self.user.text())
+                p.sendline(self.paw.text())
+                if self.check.isChecked()==True:
+                    p.sendline('y')
+                else:
+                    p.sendline('n')
+            print('sent cred')
+            state2=p.expect(['Select server:',pexpect.EOF])
+            print('pass expect 2')
+            print(state2)
+            if state2==1:
+                text=p.before.decode('utf-8')
+                if '-1002' in text:
+                    print('no pc')
+                    p.close
+                    self.done.emit(3,'')
+                else:
+                    prelim='Unexpected error\n Error log:\n'
+                    text=prelim+text
+                    print(text)
+                    p.close()
+                    self.done.emit(0, text)
+                    
+            else:
+                serv=p.before.decode('utf-8')
+                a=serv.find('1)')
+                serv=serv[a:]
+                print(serv)
+                p.close()
+                self.done.emit(3,serv)
+        return
 
 if __name__ == "__main__":
     import sys
